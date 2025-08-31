@@ -58,6 +58,14 @@ python predict.py --model model_name --interactive
 - `-yname`: Target column name
 - `-yloc`: Target column position (0-indexed)
 - `-n, --num_algorithms`: Number of top algorithms to train (default: 1)
+- `-help <algorithm>`: Display detailed information about specified algorithm
+
+```bash
+# View algorithm help information
+python mlselect.py -help linear_regression
+python mlselect.py -help random_forest_classifier
+python mlselect.py -help kmeans
+```
 
 #### predict.py
 - `--model`: Model name/path (required)

@@ -45,6 +45,13 @@ class MLSelectCLI:
         
     def parse_arguments(self, args):
         """Parse command line arguments"""
+        # Check for help command first
+        if len(args) >= 2 and args[0] == '-help':
+            algorithm_name = args[1]
+            algorithm_manager = AlgorithmManager()
+            algorithm_manager.print_algorithm_help(algorithm_name)
+            return False
+            
         if len(args) < 6:
             self.print_usage()
             return False
@@ -161,6 +168,7 @@ class MLSelectCLI:
     def print_usage(self):
         """Print usage information"""
         print("Usage: python mlselect <input_file> <output_file> <-xloc|-xname> <N> <x1> ... <xN> <-yloc|-yname> <N> <y1> ... <yN> [-run] [top|bottom] N")
+        print("       python mlselect -help <algorithm>")
         print("")
         print("Arguments:")
         print("  input_file    Input data file for analysis")
@@ -173,12 +181,22 @@ class MLSelectCLI:
         print("  -run          Optional: Train models using selected algorithms")
         print("  top|bottom    Select top N or bottom N algorithms by score")
         print("  N             Number of algorithms to train")
+        print("  -help         Show detailed information about a specific algorithm")
+        print("  <algorithm>   Algorithm name (e.g., linear_regression, random_forest_classification)")
         print("")
         print("Examples:")
         print("  python mlselect data.csv output.json -xname 2 feature1 feature2 -yname 1 target")
         print("  python mlselect data.csv output.json -xloc 2 0 1 -yloc 1 2")
         print("  python mlselect data.csv output.json -xname 2 feature1 feature2 -yname 1 target -run top 3")
         print("  python mlselect data.csv output.json -xloc 2 0 1 -yloc 1 2 -run bottom 2")
+        print("  python mlselect -help linear_regression")
+        print("  python mlselect -help random_forest_classification")
+        print("")
+        print("Available algorithms:")
+        algorithm_manager = AlgorithmManager()
+        available = algorithm_manager.get_available_algorithms()
+        for alg_type, algorithms in available.items():
+            print(f"  {alg_type.upper()}: {', '.join(algorithms)}")
     
     def load_data(self):
         """Load input data file"""
