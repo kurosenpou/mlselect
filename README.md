@@ -9,9 +9,12 @@ ML Select is an intelligent machine learning tool that automatically analyzes yo
 ### Features
 - **Automatic Data Analysis**: Comprehensive data profiling and quality assessment
 - **Smart Algorithm Recommendation**: AI-powered algorithm selection based on data characteristics
+- **Modular Architecture**: Modular design with algorithms organized by type
+- **Unified Algorithm Management**: AlgorithmManager provides a unified interface for algorithm access
 - **Model Training**: Automated training with the best-performing algorithms
 - **Prediction Service**: Easy-to-use prediction interface for trained models
 - **Multiple Input Formats**: Support for various data formats and column specifications
+- **Extensibility**: Modular design facilitates adding new algorithms and features
 
 ### Installation
 ```bash
@@ -85,9 +88,12 @@ ML Select 是一个智能机器学习工具，能够自动分析您的数据并�
 ### 功能特点
 - **自动数据分析**：全面的数据概况分析和质量评估
 - **智能算法推荐**：基于数据特征的AI算法选择
+- **模块化架构**：采用模块化设计，算法按类型分组管理
+- **统一算法管理**：通过AlgorithmManager提供统一的算法访问接口
 - **模型训练**：使用最佳算法自动训练
 - **预测服务**：易于使用的训练模型预测接口
 - **多种输入格式**：支持各种数据格式和列规范
+- **可扩展性**：模块化设计便于添加新算法和功能
 
 ### 安装
 ```bash
@@ -159,9 +165,29 @@ ML_select/
 ├── setup.py            # 安装配置
 ├── ml_engine/          # 机器学习引擎
 │   ├── algorithms/     # 算法实现
+│   │   ├── algorithm_manager.py  # 统一算法管理器
+│   │   ├── regression/           # 回归算法模块
+│   │   │   ├── __init__.py
+│   │   │   └── regression_algorithms.py
+│   │   ├── classification/       # 分类算法模块
+│   │   │   ├── __init__.py
+│   │   │   └── classification_algorithms.py
+│   │   ├── clustering/           # 聚类算法模块
+│   │   │   ├── __init__.py
+│   │   │   └── clustering_algorithms.py
+│   │   └── ensemble/             # 集成算法模块（预留）
+│   │       └── __init__.py
+│   ├── preprocessing/  # 数据预处理模块
+│   │   ├── __init__.py
+│   │   └── data_preprocessor.py
 │   ├── feature_analysis/ # 特征分析
+│   │   ├── __init__.py
+│   │   └── feature_analyzer.py
 │   ├── model_selection/ # 模型选择
+│   │   ├── __init__.py
+│   │   └── algorithm_selector.py
 │   └── evaluation/     # 模型评估
+│       └── __init__.py
 ├── data/               # 数据存储
 │   └── models/         # 训练好的模型
 └── README.md           # 本文档
@@ -186,9 +212,35 @@ python predict.py --model salary_prediction_model --interactive
 ```
 
 ### 支持的算法
-- **回归**：线性回归、随机森林回归、支持向量回归、决策树回归
-- **分类**：逻辑回归、随机森林分类、支持向量机、决策树分类
-- **聚类**：K-Means、层次聚类
+
+#### 回归算法 (Regression)
+- 线性回归 (Linear Regression)
+- 岭回归 (Ridge Regression)
+- Lasso回归 (Lasso Regression)
+- 弹性网络 (Elastic Net)
+- 随机森林回归 (Random Forest Regressor)
+- 梯度提升回归 (Gradient Boosting Regressor)
+- 支持向量回归 (Support Vector Regressor)
+- 决策树回归 (Decision Tree Regressor)
+- K近邻回归 (K-Neighbors Regressor)
+- AdaBoost回归 (AdaBoost Regressor)
+
+#### 分类算法 (Classification)
+- 逻辑回归 (Logistic Regression)
+- 随机森林分类 (Random Forest Classifier)
+- 梯度提升分类 (Gradient Boosting Classifier)
+- 支持向量机 (Support Vector Machine)
+- 决策树分类 (Decision Tree Classifier)
+- K近邻分类 (K-Neighbors Classifier)
+- 朴素贝叶斯 (Naive Bayes)
+- AdaBoost分类 (AdaBoost Classifier)
+- 多层感知机 (Multi-layer Perceptron)
+
+#### 聚类算法 (Clustering)
+- K-Means聚类
+- 层次聚类 (Agglomerative Clustering)
+- DBSCAN聚类
+- 高斯混合模型 (Gaussian Mixture Model)
 
 ### 故障排除
 1. **模块导入错误**：确保已安装所有依赖项
@@ -198,6 +250,24 @@ python predict.py --model salary_prediction_model --interactive
 
 ### 贡献
 欢迎提交问题和拉取请求来改进这个项目。
+
+## 版本更新
+
+### v2.0.0 - 模块化架构重构
+- **重大更新**：完全重构了项目架构，采用模块化设计
+- **新增功能**：
+  - 引入 `AlgorithmManager` 统一算法管理器
+  - 算法按类型分组：回归、分类、聚类、集成
+  - 独立的数据预处理模块
+  - 改进的代码组织和可维护性
+- **性能优化**：
+  - 更快的算法加载和初始化
+  - 优化的内存使用
+  - 改进的错误处理机制
+- **开发者友好**：
+  - 清晰的模块边界
+  - 易于扩展新算法
+  - 更好的代码复用性
 
 ### 许可证
 本项目采用MIT许可证。

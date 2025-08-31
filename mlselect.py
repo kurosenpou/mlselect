@@ -28,7 +28,7 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from ml_engine.feature_analysis.feature_analyzer import FeatureAnalyzer
 from ml_engine.model_selection.algorithm_selector import AlgorithmSelector
-from ml_engine.algorithms.ml_algorithms import MLAlgorithms
+from ml_engine.algorithms import AlgorithmManager
 
 
 class MLSelectCLI:
@@ -328,7 +328,7 @@ class MLSelectCLI:
                 print(f"训练评分最低的 {self.training_count} 种算法:")
             
             # Initialize ML algorithms engine
-            ml_engine = MLAlgorithms()
+            ml_engine = AlgorithmManager()
             
             # Prepare target column name
             target_column = y_column_names[0] if y_column_names else 'target'

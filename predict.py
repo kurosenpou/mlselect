@@ -13,7 +13,7 @@ import argparse
 import pandas as pd
 import os
 import sys
-from ml_engine.algorithms.ml_algorithms import MLAlgorithms
+from ml_engine.algorithms import AlgorithmManager
 
 def load_and_predict(model_path: str, data_path: str, output_path: str = None):
     """
@@ -21,7 +21,7 @@ def load_and_predict(model_path: str, data_path: str, output_path: str = None):
     """
     try:
         # 初始化ML引擎
-        ml_engine = MLAlgorithms()
+        ml_engine = AlgorithmManager()
         
         # 检查模型文件是否存在
         if not os.path.exists(model_path):
@@ -112,7 +112,7 @@ def interactive_predict(model_path: str):
     """
     try:
         # 初始化ML引擎
-        ml_engine = MLAlgorithms()
+        ml_engine = AlgorithmManager()
         
         # 加载模型
         print(f"正在加载模型: {model_path}")
