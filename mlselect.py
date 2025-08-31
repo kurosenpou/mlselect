@@ -42,6 +42,7 @@ class MLSelectCLI:
         self.run_training = False  # Whether to run training
         self.training_mode = None  # 'top' or 'bottom'
         self.training_count = 0  # Number of algorithms to train
+        self.goal = None  # 'regression', 'classification', or 'clustering'
         
     def parse_arguments(self, args):
         """Parse command line arguments"""
@@ -95,44 +96,81 @@ class MLSelectCLI:
                 self.x_columns = [args[i]]
                 i += 1
         
-        # Parse Y columns
-        if i >= len(args):
-            print("Error: Missing Y column specification")
-            return False
-            
-        if args[i] == '-yloc':
-            self.y_mode = 'loc'
-        elif args[i] == '-yname':
-            self.y_mode = 'name'
-        else:
-            print(f"Error: Expected -yloc or -yname, got {args[i]}")
-            return False
-            
-        i += 1
-        if i >= len(args):
-            print("Error: Missing Y column specification")
-            return False
-            
-        # Support comma-separated column names or single column name
-        if ',' in args[i]:
-            self.y_columns = [col.strip() for col in args[i].split(',')]
+        # Parse optional -goal parameter first to determine if Y columns are needed
+        goal_specified = False
+        if i < len(args) and args[i] == '-goal':
+            goal_specified = True
             i += 1
+            if i >= len(args):
+                print("Error: Missing goal type after -goal")
+                return False
+                
+            if args[i] not in ['regression', 'classification', 'clustering']:
+                print(f"Error: Goal must be 'regression', 'classification', or 'clustering', got {args[i]}")
+                return False
+                
+            self.goal = args[i]
+            i += 1
+        
+        # Parse Y columns (optional for clustering)
+        y_required = not goal_specified or self.goal != 'clustering'
+        
+        if y_required:
+            if i >= len(args):
+                print("Error: Missing Y column specification")
+                return False
+                
+            if args[i] == '-yloc':
+                self.y_mode = 'loc'
+            elif args[i] == '-yname':
+                self.y_mode = 'name'
+            else:
+                print(f"Error: Expected -yloc or -yname, got {args[i]}")
+                return False
+                
+            i += 1
+            if i >= len(args):
+                print("Error: Missing Y column specification")
+                return False
+                
+            # Support comma-separated column names or single column name
+            if ',' in args[i]:
+                self.y_columns = [col.strip() for col in args[i].split(',')]
+                i += 1
+            else:
+                # Check if it's a number (original format) or a single column name
+                try:
+                    y_count = int(args[i])
+                    # Original format: number followed by column names
+                    i += 1
+                    if i + y_count > len(args):
+                        print("Error: Not enough Y column specifications")
+                        return False
+                        
+                    self.y_columns = args[i:i+y_count]
+                    i += y_count
+                except ValueError:
+                    # Single column name
+                    self.y_columns = [args[i]]
+                    i += 1
         else:
-            # Check if it's a number (original format) or a single column name
-            try:
-                y_count = int(args[i])
-                # Original format: number followed by column names
-                i += 1
-                if i + y_count > len(args):
-                    print("Error: Not enough Y column specifications")
-                    return False
-                    
-                self.y_columns = args[i:i+y_count]
-                i += y_count
-            except ValueError:
-                # Single column name
-                self.y_columns = [args[i]]
-                i += 1
+            # For clustering, Y columns are not required
+            self.y_columns = []
+            self.y_mode = None
+        
+        # Parse -goal parameter if not already parsed
+        if not goal_specified and i < len(args) and args[i] == '-goal':
+            i += 1
+            if i >= len(args):
+                print("Error: Missing goal type after -goal")
+                return False
+                
+            if args[i] not in ['regression', 'classification', 'clustering']:
+                print(f"Error: Goal must be 'regression', 'classification', or 'clustering', got {args[i]}")
+                return False
+                
+            self.goal = args[i]
+            i += 1
         
         # Parse optional -run parameter
         if i < len(args) and args[i] == '-run':
@@ -167,7 +205,7 @@ class MLSelectCLI:
     
     def print_usage(self):
         """Print usage information"""
-        print("Usage: python mlselect <input_file> <output_file> <-xloc|-xname> <N> <x1> ... <xN> <-yloc|-yname> <N> <y1> ... <yN> [-run] [top|bottom] N")
+        print("Usage: python mlselect <input_file> <output_file> <-xloc|-xname> <N> <x1> ... <xN> <-yloc|-yname> <N> <y1> ... <yN> [-goal <regression|classification|clustering>] [-run] [top|bottom] N")
         print("       python mlselect -help <algorithm>")
         print("")
         print("Arguments:")
@@ -178,6 +216,7 @@ class MLSelectCLI:
         print("  N             Number of columns")
         print("  x1...xN       X column specifications")
         print("  y1...yN       Y column specifications")
+        print("  -goal         Optional: Specify machine learning goal (regression, classification, or clustering)")
         print("  -run          Optional: Train models using selected algorithms")
         print("  top|bottom    Select top N or bottom N algorithms by score")
         print("  N             Number of algorithms to train")
@@ -187,8 +226,9 @@ class MLSelectCLI:
         print("Examples:")
         print("  python mlselect data.csv output.json -xname 2 feature1 feature2 -yname 1 target")
         print("  python mlselect data.csv output.json -xloc 2 0 1 -yloc 1 2")
-        print("  python mlselect data.csv output.json -xname 2 feature1 feature2 -yname 1 target -run top 3")
-        print("  python mlselect data.csv output.json -xloc 2 0 1 -yloc 1 2 -run bottom 2")
+        print("  python mlselect data.csv output.json -xname 2 feature1 feature2 -yname 1 target -goal regression")
+        print("  python mlselect data.csv output.json -xname 2 feature1 feature2 -yname 1 target -goal classification -run top 3")
+        print("  python mlselect data.csv output.json -xloc 2 0 1 -yloc 1 2 -goal clustering -run bottom 2")
         print("  python mlselect -help linear_regression")
         print("  python mlselect -help random_forest_classification")
         print("")
@@ -230,14 +270,19 @@ class MLSelectCLI:
                 X = df[self.x_columns]
                 x_column_names = self.x_columns
             
-            # Select Y columns
-            if self.y_mode == 'loc':
-                y_indices = [int(col) for col in self.y_columns]
-                y = df.iloc[:, y_indices]
-                y_column_names = df.columns[y_indices].tolist()
-            else:  # name mode
-                y = df[self.y_columns]
-                y_column_names = self.y_columns
+            # Select Y columns (if needed)
+            if self.y_columns and self.y_mode:
+                if self.y_mode == 'loc':
+                    y_indices = [int(col) for col in self.y_columns]
+                    y = df.iloc[:, y_indices]
+                    y_column_names = df.columns[y_indices].tolist()
+                else:  # name mode
+                    y = df[self.y_columns]
+                    y_column_names = self.y_columns
+            else:
+                # For clustering, no Y columns needed
+                y = None
+                y_column_names = []
             
             return X, y, x_column_names, y_column_names
             
@@ -256,7 +301,7 @@ class MLSelectCLI:
             'x_rows_count': len(X),
             'y_columns_count': len(y_column_names),
             'y_columns_names': y_column_names,
-            'y_rows_count': len(y),
+            'y_rows_count': len(y) if y is not None else 0,
             'total_rows': len(df),
             'total_columns': len(df.columns)
         }
@@ -286,7 +331,19 @@ class MLSelectCLI:
         # Algorithm recommendation
         try:
             algorithm_selector = AlgorithmSelector()
-            recommended_algorithms = algorithm_selector.recommend_algorithms(X, y)
+            # For clustering, we need to pass different parameters
+            if self.goal == 'clustering':
+                # Create a temporary dataframe with only features for clustering
+                temp_df = X.copy()
+                recommended_algorithms = algorithm_selector.recommend_algorithms(
+                    df=temp_df, 
+                    target_column=None, 
+                    feature_columns=x_column_names, 
+                    task_type=self.goal
+                )
+            else:
+                # For regression and classification
+                recommended_algorithms = algorithm_selector.recommend_algorithms(X, y, task_type=self.goal)
         except Exception as e:
             print(f"Warning: Algorithm recommendation failed: {str(e)}")
             recommended_algorithms = {"error": str(e), "default_recommendations": [
@@ -442,7 +499,10 @@ class MLSelectCLI:
         print(f"文件名: {file_info['filename']}")
         print(f"数据维度: {file_info['total_rows']} 行 × {file_info['total_columns']} 列")
         print(f"特征列: {', '.join(file_info['x_columns_names'])} ({file_info['x_columns_count']} 个)")
-        print(f"目标列: {', '.join(file_info['y_columns_names'])} ({file_info['y_columns_count']} 个)")
+        if file_info['y_columns_count'] > 0:
+            print(f"目标列: {', '.join(file_info['y_columns_names'])} ({file_info['y_columns_count']} 个)")
+        else:
+            print("目标列: 无 (聚类任务)")
         
         # Data quality summary
         missing_count = sum(data_quality['missing_values'].values())
@@ -508,7 +568,11 @@ class MLSelectCLI:
         # Select columns
         print("Selecting columns...")
         X, y, x_column_names, y_column_names = self.select_columns(df)
-        if X is None or y is None:
+        if X is None:
+            return False
+        
+        # For clustering, y can be None
+        if self.goal != 'clustering' and y is None:
             return False
         
         print(f"Selected {len(x_column_names)} X columns and {len(y_column_names)} Y columns")

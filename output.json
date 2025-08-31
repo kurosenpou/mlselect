@@ -1,0 +1,228 @@
+{
+  "file_info": {
+    "filename": "test_classification.csv",
+    "analysis_date": "2025-08-31T20:37:59.714874",
+    "x_columns_count": 2,
+    "x_columns_names": [
+      "feature1",
+      "feature2"
+    ],
+    "x_rows_count": 10,
+    "y_columns_count": 1,
+    "y_columns_names": [
+      "target"
+    ],
+    "y_rows_count": 10,
+    "total_rows": 10,
+    "total_columns": 3
+  },
+  "dataframe_info": "<class 'pandas.core.frame.DataFrame'>\nRangeIndex: 10 entries, 0 to 9\nData columns (total 3 columns):\n #   Column    Non-Null Count  Dtype  \n---  ------    --------------  -----  \n 0   feature1  10 non-null     float64\n 1   feature2  10 non-null     float64\n 2   target    10 non-null     object \ndtypes: float64(2), object(1)\nmemory usage: 372.0+ bytes\n",
+  "data_quality": {
+    "missing_values": {
+      "feature1": 0,
+      "feature2": 0,
+      "target": 0
+    },
+    "data_types": {
+      "feature1": "float64",
+      "feature2": "float64",
+      "target": "object"
+    },
+    "duplicated_rows": 0,
+    "memory_usage": {
+      "Index": 132,
+      "feature1": 80,
+      "feature2": 80,
+      "target": 580
+    }
+  },
+  "feature_analysis": {
+    "basic_info": {
+      "n_samples": 10,
+      "n_features": 2,
+      "memory_usage": "292",
+      "feature_names": [
+        "feature1",
+        "feature2"
+      ]
+    },
+    "statistical_summary": {
+      "numerical_features": 2,
+      "categorical_features": 0,
+      "numerical_summary": {
+        "feature1": {
+          "mean": 2.3099999999999996,
+          "std": 0.7093815773067569,
+          "min": 1.2,
+          "max": 3.2,
+          "q25": 1.825,
+          "q50": 2.3,
+          "q75": 2.95
+        },
+        "feature2": {
+          "mean": 2.54,
+          "std": 0.7011102306738616,
+          "min": 1.5,
+          "max": 3.4,
+          "q25": 1.925,
+          "q50": 2.75,
+          "q75": 3.05
+        }
+      }
+    },
+    "data_quality": {
+      "feature1": {
+        "missing_count": "0",
+        "missing_percentage": 0.0,
+        "duplicate_count": "0",
+        "duplicate_percentage": 0.0,
+        "unique_count": 10,
+        "unique_percentage": 100.0,
+        "data_type": "float64",
+        "outlier_count": 0,
+        "outlier_percentage": 0.0,
+        "zero_count": "0",
+        "zero_percentage": 0.0
+      },
+      "feature2": {
+        "missing_count": "0",
+        "missing_percentage": 0.0,
+        "duplicate_count": "0",
+        "duplicate_percentage": 0.0,
+        "unique_count": 10,
+        "unique_percentage": 100.0,
+        "data_type": "float64",
+        "outlier_count": 0,
+        "outlier_percentage": 0.0,
+        "zero_count": "0",
+        "zero_percentage": 0.0
+      }
+    },
+    "feature_types": {
+      "numerical": [
+        "feature1",
+        "feature2"
+      ],
+      "categorical": [],
+      "binary": [],
+      "datetime": [],
+      "text": []
+    },
+    "correlations": {
+      "correlation_matrix": {
+        "feature1": {
+          "feature1": 1.0,
+          "feature2": -0.4499360038036907
+        },
+        "feature2": {
+          "feature1": -0.4499360038036907,
+          "feature2": 1.0
+        }
+      },
+      "high_correlation_pairs": [],
+      "max_correlation": 1.0,
+      "mean_correlation": 0.7249680019018454
+    },
+    "distributions": {
+      "feature1": {
+        "skewness": -0.15055516134584854,
+        "kurtosis": -1.367314908496024,
+        "is_normal": "True",
+        "normality_p_value": 0.40261955655485,
+        "distribution_type": "正态分布"
+      },
+      "feature2": {
+        "skewness": -0.3587102521882614,
+        "kurtosis": -1.3369995650880118,
+        "is_normal": "True",
+        "normality_p_value": 0.3742490684910581,
+        "distribution_type": "正态分布"
+      }
+    },
+    "target_analysis": {
+      "target_type": "categorical",
+      "target_unique_values": 2,
+      "target_distribution": {
+        "A": 5,
+        "B": 5
+      },
+      "feature_relationships": {
+        "feature1": {
+          "f_statistic": 0.015929203539822988,
+          "p_value": 0.9026792828043019,
+          "relationship_strength": "not_significant"
+        },
+        "feature2": {
+          "f_statistic": 2.0431328036322354,
+          "p_value": 0.19075902051121243,
+          "relationship_strength": "not_significant"
+        }
+      }
+    },
+    "feature_importance": {
+      "task_type": "classification",
+      "feature_importance": {
+        "feature1": "0",
+        "feature2": "0"
+      },
+      "sorted_importance": [
+        [
+          "feature1",
+          "0"
+        ],
+        [
+          "feature2",
+          "0"
+        ]
+      ],
+      "top_features": [
+        "feature1",
+        "feature2"
+      ]
+    }
+  },
+  "recommended_algorithms": [
+    {
+      "algorithm": "logistic_regression",
+      "name": "逻辑回归",
+      "description": "适用于二分类和多分类问题",
+      "score": 0.5,
+      "suitability": "推荐"
+    },
+    {
+      "algorithm": "svm",
+      "name": "支持向量机",
+      "description": "适用于高维数据分类",
+      "score": 0.5,
+      "suitability": "推荐"
+    },
+    {
+      "algorithm": "random_forest_classification",
+      "name": "随机森林分类",
+      "description": "适用于复杂分类问题，处理缺失值能力强",
+      "score": 0.0,
+      "suitability": "不推荐"
+    },
+    {
+      "algorithm": "knn",
+      "name": "K近邻算法",
+      "description": "适用于局部模式明显的分类问题",
+      "score": 0.0,
+      "suitability": "不推荐"
+    },
+    {
+      "algorithm": "naive_bayes",
+      "name": "朴素贝叶斯",
+      "description": "适用于文本分类和特征独立的问题",
+      "score": 0.0,
+      "suitability": "不推荐"
+    },
+    {
+      "algorithm": "decision_tree_classification",
+      "name": "决策树分类",
+      "description": "适用于需要解释性的分类问题",
+      "score": 0.0,
+      "suitability": "不推荐"
+    }
+  ]
+}

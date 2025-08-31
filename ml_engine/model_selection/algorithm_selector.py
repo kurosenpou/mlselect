@@ -96,7 +96,12 @@ class AlgorithmSelector:
         # 基本信息
         characteristics['n_samples'] = len(df)
         characteristics['n_features'] = len(feature_columns)
-        characteristics['target_type'] = self._determine_target_type(df[target_column])
+        
+        # 如果有目标列，分析目标类型
+        if target_column and target_column in df.columns:
+            characteristics['target_type'] = self._determine_target_type(df[target_column])
+        else:
+            characteristics['target_type'] = None  # 聚类任务没有目标列
         
         # 数据大小分类
         if characteristics['n_samples'] < 1000:
@@ -111,18 +116,19 @@ class AlgorithmSelector:
         characteristics['missing_values'] = df[feature_columns].isnull().sum().sum()
         characteristics['missing_percentage'] = characteristics['missing_values'] / (len(df) * len(feature_columns))
         
-        # 目标变量分析
-        if characteristics['target_type'] == 'continuous':
-            characteristics['target_distribution'] = self._analyze_target_distribution(df[target_column])
-        else:
-            characteristics['n_classes'] = df[target_column].nunique()
-            characteristics['class_balance'] = self._analyze_class_balance(df[target_column])
-        
-        # 关系分析
-        if len(feature_columns) == 1 and characteristics['target_type'] == 'continuous':
-            characteristics['relationship_type'] = self._analyze_relationship(
-                df[feature_columns[0]], df[target_column]
-            )
+        # 目标变量分析（仅当有目标列时）
+        if target_column and target_column in df.columns:
+            if characteristics['target_type'] == 'continuous':
+                characteristics['target_distribution'] = self._analyze_target_distribution(df[target_column])
+            else:
+                characteristics['n_classes'] = df[target_column].nunique()
+                characteristics['class_balance'] = self._analyze_class_balance(df[target_column])
+            
+            # 关系分析
+            if len(feature_columns) == 1 and characteristics['target_type'] == 'continuous':
+                characteristics['relationship_type'] = self._analyze_relationship(
+                    df[feature_columns[0]], df[target_column]
+                )
         
         # 维度分析
         characteristics['dimensionality'] = 'high' if len(feature_columns) > 20 else 'low_to_medium'
@@ -249,7 +255,9 @@ class AlgorithmSelector:
         
         # 自动确定任务类型
         if task_type is None:
-            if characteristics['target_type'] == 'continuous':
+            if characteristics['target_type'] is None:
+                task_type = 'clustering'  # 没有目标列，默认为聚类
+            elif characteristics['target_type'] == 'continuous':
                 task_type = 'regression'
             else:
                 task_type = 'classification'
@@ -323,6 +331,26 @@ class AlgorithmSelector:
                 score += 0.2
             elif n_classes > 2 and algorithm in ['random_forest_classification', 'knn']:
                 score += 0.2
+        
+        # 聚类算法评分
+        if task_type == 'clustering':
+            # 基础分数
+            score += 0.5
+            
+            # 基于数据大小的评分
+            if algorithm == 'kmeans':
+                if data_size in ['small', 'medium']:
+                    score += 0.2
+                if characteristics['n_features'] <= 10:
+                    score += 0.1
+            elif algorithm == 'hierarchical':
+                if data_size == 'small':
+                    score += 0.2
+                if characteristics['n_features'] <= 5:
+                    score += 0.1
+            elif algorithm == 'dbscan':
+                if data_size in ['medium', 'large']:
+                    score += 0.2
         
         return min(score, 1.0)  # 限制最大分数为1.0
     
